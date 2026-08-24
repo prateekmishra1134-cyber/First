@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A playful romantic prank microsite made for Sandali Khare, aka Darling." />
+  <title>For Darling — from Prateek</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div id="floatingLayer" class="floating-layer"></div>
+    <div id="burstLayer" class="burst-layer"></div>
+  </div>
+
+  <main class="app-shell" id="appShell">
+    <header class="top-bar" aria-label="Experience progress">
+      <div class="brand-mark">P<span>♥</span>D</div>
+      <nav class="progress-dots" id="progressDots" aria-label="Progress">
+        <span class="progress-dot is-active" data-step="1">01</span>
+        <span class="progress-dot" data-step="2">02</span>
+        <span class="progress-dot" data-step="3">03</span>
+        <span class="progress-dot" data-step="4">04</span>
+      </nav>
+    </header>
+
+    <section class="hero-card" id="stageCard" aria-live="polite">
+      <div class="penguin-wrap" aria-label="Cute little penguin reacting to the story">
+        <div id="penguin" class="penguin mood-happy holding-heart">
+          <div class="penguin-shadow"></div>
+          <div class="penguin-body">
+            <div class="penguin-face">
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="beak"></span>
+              <span class="blush blush-left"></span>
+              <span class="blush blush-right"></span>
+            </div>
+            <span class="wing wing-left"></span>
+            <span class="wing wing-right"></span>
+            <span class="tiny-heart">♥</span>
+          </div>
+          <div class="feet"><span></span><span></span></div>
+        </div>
+      </div>
+
+      <div class="stage-content" id="stageContent"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
