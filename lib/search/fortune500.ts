@@ -1,0 +1,2 @@
+/** Curated seed data. Update annually from Fortune's published list before production use. */
+export const fortune500Companies=[{name:"Walmart",rank:1,year:2024,industry:"Retail",domain:"walmart.com",careersUrl:"https://careers.walmart.com/"},{name:"Amazon",rank:2,year:2024,industry:"Technology",domain:"amazon.jobs",careersUrl:"https://www.amazon.jobs/"},{name:"Apple",rank:4,year:2024,industry:"Technology",domain:"apple.com",careersUrl:"https://jobs.apple.com/"}] as const;

@@ -1,0 +1,5 @@
+import type { Job } from "@/types/domain";
+export const normalizeText=(value:string| null | undefined)=> (value??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+export function canonicalJobKey(job:Job) { return [normalizeText(job.company),normalizeText(job.title),normalizeText(job.location), normalizeUrl(job.applicationUrl)].filter(Boolean).join("|"); }
+export function normalizeUrl(url:string) { try { const u=new URL(url); u.hash=""; ["utm_source","utm_medium","utm_campaign"].forEach(k=>u.searchParams.delete(k)); return u.toString().replace(/\/$/,""); } catch { return url; } }
+export function deduplicateJobs(jobs:Job[]) { const seen=new Map<string,Job>(); for(const job of jobs){ const key=job.externalId ? `${job.source}|${job.externalId}` : canonicalJobKey(job); const existing=seen.get(key); if(!existing) seen.set(key,{...job,sourceUrls:[job.sourceUrl]}); else { const preferOfficial=job.source==="company-careers" && existing.source!=="company-careers" ? job : existing; seen.set(key,{...preferOfficial,sourceUrls:Array.from(new Set([...(existing.sourceUrls??[existing.sourceUrl]),job.sourceUrl]))}); } } return [...seen.values()]; }

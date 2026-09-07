@@ -1,0 +1,2 @@
+/** Text extraction runs only on the server. Never send whole files to the client or application logs. */
+export async function extractCvText(file:File):Promise<string>{const buffer=Buffer.from(await file.arrayBuffer());if(file.type==='application/pdf'){const pdf=(await import('pdf-parse')).default;const result=await pdf(buffer);return result.text;}const mammoth=await import('mammoth');const result=await mammoth.extractRawText({buffer});return result.value;}

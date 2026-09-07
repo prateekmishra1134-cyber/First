@@ -1,0 +1,3 @@
+import type { JobSearchProvider, SearchCriteria, ProviderResult } from "@/lib/search/contracts";
+/** Company results belong here only when sourced from a permitted careers feed/API or indexed public result. */
+export class CompanyCareersProvider implements JobSearchProvider { id="company-careers"; label="Company careers"; enabled=Boolean(process.env.BRAVE_SEARCH_API_KEY); async searchJobs(_:SearchCriteria):Promise<ProviderResult>{ if(!this.enabled)return {jobs:[],warning:"Company careers search needs BRAVE_SEARCH_API_KEY or another permitted search provider."}; return {jobs:[],warning:"Web-result parsing is intentionally disabled until a source-specific permitted parser is configured."}; } }

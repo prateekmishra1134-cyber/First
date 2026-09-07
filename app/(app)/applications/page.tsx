@@ -1,0 +1,1 @@
+const columns=['Saved','Applying','Applied','Interview','Offer','Rejected'];export default function Applications(){return <><p className="eyebrow">Application tracker</p><h1>Know exactly what comes next.</h1><div className="grid3" style={{marginTop:25}}>{columns.map(c=><div className="panel" key={c}><b>{c}</b><p className="muted">No applications</p></div>)}</div></>}

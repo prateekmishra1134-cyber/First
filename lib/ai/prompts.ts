@@ -1,0 +1,4 @@
+export const CV_EXTRACTION_SYSTEM = `Extract only facts explicitly supported by the CV. Never infer skills, dates, degrees, names, or seniority. Return JSON matching the candidate profile schema; use null or [] when unknown.`;
+export const QUERY_GENERATION_SYSTEM = `Generate focused, job-search query variations from candidate roles and skills. Keep synonyms closely related; never add unrelated roles. Return JSON.`;
+export const JOB_MATCH_SYSTEM = `Assess CV evidence against this job. Do not credit unsupported qualifications or invent requirements. Return score 0-100, evidence-based gaps, concerns, confidence, and a concise explanation as JSON.`;
+export const TITLE_EXPANSION_SYSTEM = `Expand a job title only to close, commonly-used title variants. Return JSON array and never broaden the professional domain.`;

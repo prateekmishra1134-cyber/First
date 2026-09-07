@@ -1,0 +1,1 @@
+export default function Saved(){return <><p className="eyebrow">Saved jobs</p><h1>Keep your best options close.</h1><div className="empty">No saved jobs yet. Save a real listing from your search results to track it here.</div></>}

@@ -1,0 +1,17 @@
+create extension if not exists "pgcrypto";
+create table profiles (id uuid primary key references auth.users(id) on delete cascade, full_name text, created_at timestamptz not null default now());
+create table cvs (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, storage_path text not null, filename text not null, created_at timestamptz not null default now());
+create table candidate_profiles (user_id uuid primary key references auth.users(id) on delete cascade, data jsonb not null, updated_at timestamptz not null default now());
+create table searches (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, criteria jsonb not null, created_at timestamptz not null default now());
+create table jobs (id uuid primary key default gen_random_uuid(), company text not null, title text not null, location text, canonical_url text not null unique, data jsonb not null, posted_date timestamptz, created_at timestamptz not null default now());
+create index jobs_lookup_idx on jobs(company,title,location,posted_date desc);
+create table saved_jobs (user_id uuid not null references auth.users(id) on delete cascade, job_id uuid not null references jobs(id) on delete cascade, status text not null default 'saved' check(status in ('saved','applying','applied','interview','offer','rejected','archived')), notes text, applied_at timestamptz, interview_at timestamptz, follow_up_at timestamptz, created_at timestamptz not null default now(), primary key(user_id,job_id));
+alter table profiles enable row level security; alter table cvs enable row level security; alter table candidate_profiles enable row level security; alter table searches enable row level security; alter table saved_jobs enable row level security;
+create policy "own profile" on profiles for all using (auth.uid()=id) with check(auth.uid()=id); create policy "own cvs" on cvs for all using(auth.uid()=user_id) with check(auth.uid()=user_id); create policy "own candidate profile" on candidate_profiles for all using(auth.uid()=user_id) with check(auth.uid()=user_id); create policy "own searches" on searches for all using(auth.uid()=user_id) with check(auth.uid()=user_id); create policy "own saved jobs" on saved_jobs for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create table search_preferences (user_id uuid primary key references auth.users(id) on delete cascade, data jsonb not null default '{}'::jsonb, updated_at timestamptz not null default now());
+create table job_sources (id uuid primary key default gen_random_uuid(), job_id uuid not null references jobs(id) on delete cascade, source text not null, source_url text not null, external_job_id text, unique(job_id, source_url));
+create table company_profiles (id uuid primary key default gen_random_uuid(), name text not null unique, official_domain text, careers_url text, industry text);
+create table fortune500_companies (id uuid primary key default gen_random_uuid(), company_id uuid references company_profiles(id) on delete cascade, ranking integer not null, ranking_year integer not null, source_url text not null, unique(company_id, ranking_year));
+alter table search_preferences enable row level security;
+create policy "own search preferences" on search_preferences for all using(auth.uid()=user_id) with check(auth.uid()=user_id);
+create index jobs_source_url_idx on job_sources(source, source_url); create index saved_jobs_status_idx on saved_jobs(user_id,status);

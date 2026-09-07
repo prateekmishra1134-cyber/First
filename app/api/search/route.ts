@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { searchCriteriaSchema, candidateProfileSchema } from "@/lib/validation/schemas"; import { runSearch } from "@/lib/search/pipeline";
+export async function POST(request:Request){ try { const body=await request.json(); const criteria=searchCriteriaSchema.parse(body.criteria); const profile=candidateProfileSchema.parse(body.profile); return NextResponse.json(await runSearch(profile,criteria)); } catch(error){ return NextResponse.json({error:error instanceof Error?error.message:"Invalid search request"},{status:400}); } }
