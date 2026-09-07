@@ -1,73 +1,88 @@
-# Darling Romantic Prank Website
+# AI Job Finder
 
-A polished, mobile-first static romantic/prank microsite made specifically for **Sandali Khare (Darling)** by **Prateek**. It uses only HTML, CSS, and vanilla JavaScript, with no backend, database, login, paid APIs, API keys, or paid assets.
+AI Job Finder is a privacy-conscious, evidence-based personal job-search assistant. A candidate uploads a CV, reviews an AI-generated structured profile, selects jobs and locations, then receives normalized, deduplicated job results with direct application URLs and transparent match analysis.
 
-## Files
+> **Honesty boundary:** The app never invents jobs, companies, salaries, posting dates, requirements, application links, Fortune 500 status, or CV qualifications. Providers without a lawful, configured integration explicitly report that they were not searched.
 
-- `index.html` — website markup and stage container
-- `style.css` — responsive styling, animations, glassmorphism, and CSS penguin
-- `script.js` — stage navigation, prank button movement, penguin reactions, and particles
-- `README.md` — setup and publishing instructions
-
-## Run locally
-
-1. Download or clone this project.
-2. Open the project folder.
-3. Double-click `index.html`, or right-click it and choose your browser.
-
-That is all. Because it is a static website, it also works from a simple local file path.
-
-## Create a GitHub repository
-
-1. Go to [GitHub](https://github.com/) and sign in.
-2. Click **New repository**.
-3. Choose a repository name, for example `darling-website`.
-4. Keep it public if you want to use free GitHub Pages easily.
-5. Click **Create repository**.
-
-## Upload the files
-
-### Option A: Upload in the browser
-
-1. Open your new repository on GitHub.
-2. Click **Add file** → **Upload files**.
-3. Upload these files:
-   - `index.html`
-   - `style.css`
-   - `script.js`
-   - `README.md`
-4. Click **Commit changes**.
-
-### Option B: Upload with Git
-
-```bash
-git init
-git add index.html style.css script.js README.md
-git commit -m "Add Darling romantic prank website"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-git push -u origin main
-```
-
-## Enable GitHub Pages
-
-1. Open the repository on GitHub.
-2. Go to **Settings**.
-3. In the left sidebar, click **Pages**.
-4. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-5. Choose the `main` branch and `/root` folder.
-6. Click **Save**.
-
-## Get the public URL
-
-After GitHub Pages finishes deploying, GitHub will show a public link on the Pages settings screen. It usually looks like:
+## Architecture
 
 ```text
-https://YOUR_USERNAME.github.io/YOUR_REPOSITORY_NAME/
+Next.js UI → validated API route → search pipeline → isolated providers
+                                ├→ OpenAI (server-side JSON extraction/matching)
+                                └→ Supabase/Postgres + private storage
 ```
 
-Open that link on a phone for the intended mobile-first experience.
+- **Frontend:** Next.js App Router pages in `app/(app)`, with a responsive Tailwind UI.
+- **API/security:** Zod schemas are applied at input boundaries; secrets are read server-side only.
+- **AI:** Dedicated prompt module and strict structured-output schema validation.
+- **Search:** Provider interface, normalization, canonical URL cleanup, duplicate removal, partial-failure handling, and explainable preliminary matching.
+- **Persistence:** Supabase SQL schema with row-level security policies and user ownership.
 
-## Hosting note
+## Folder structure
 
-This project requires no paid hosting and no backend server. GitHub Pages can host it for free, and the site can also be shared by sending the four files directly.
+- `app/` — pages and API route handlers
+- `components/` — shared layout/UI components
+- `lib/ai/` — OpenAI client and dedicated prompts
+- `lib/search/` — pipeline, providers, Fortune 500 seed dataset
+- `lib/db/` — server database client boundary
+- `lib/validation/` — Zod schemas
+- `lib/utils/` — job normalization and duplicate detection
+- `supabase/schema.sql` — Postgres schema, indexes, RLS
+- `tests/` — Vitest unit tests
+
+## Local setup
+
+1. Use Node.js 20+.
+2. Copy `.env.example` to `.env.local` and fill relevant values.
+3. Install dependencies: `npm install`.
+4. Start: `npm run dev`.
+5. Run quality checks: `npm run typecheck && npm run lint && npm test && npm run build`.
+
+## Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | Server-side CV extraction and semantic job matching. |
+| `SUPABASE_URL` | Supabase project URL. |
+| `SUPABASE_ANON_KEY` | Browser auth client key (future auth wiring). |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only privileged operations; never expose it. |
+| `BRAVE_SEARCH_API_KEY` | Optional permitted web-search integration. |
+| `ENABLE_DEVELOPMENT_FIXTURES` | Explicit local-only fixture switch; do not enable in production. |
+
+## Database and storage setup
+
+Create a Supabase project and run `supabase/schema.sql` in the SQL editor or through migrations. Create a **private** CV bucket. Before enabling the upload endpoint in production, wire Supabase Auth session verification to every user-scoped API route and store file paths—not public URLs. RLS policies in the schema limit rows to `auth.uid()`.
+
+## OpenAI setup
+
+Set `OPENAI_API_KEY` only in the deployment environment. `lib/ai/prompts.ts` keeps prompts separate from routes. `extractCandidateProfile` uses structured JSON, Zod validation, and an explicit no-invention instruction. Do not log CV text or model input/output containing CV content.
+
+## Search providers
+
+Every provider implements `JobSearchProvider` (`lib/search/contracts.ts`). The shipped LinkedIn, Indeed, Naukri, and Wellfound modules are intentionally marked **manual/search integration required** because no unverified scraper is included. Do not bypass authentication, robots restrictions, CAPTCHAs, paywalls, or anti-bot controls.
+
+To add a provider:
+
+1. Confirm a permitted official API, feed, or public indexing path.
+2. Implement `searchJobs(criteria)` in `lib/search/providers/` and return only observed fields.
+3. Add it to `providers` in `lib/search/providers/index.ts`.
+4. Preserve source and application URLs, normalize results, add tests, and document required environment variables.
+
+## Fortune 500 data
+
+`lib/search/fortune500.ts` is a deliberately small curated seed dataset containing year and rank metadata. Refresh it annually from a supported source before asserting Fortune 500 badges. Company career pages must remain official/permitted sources.
+
+## Deployment to Vercel
+
+Import the repository into Vercel, set all production environment variables in project settings, and deploy. Keep OpenAI and Supabase service-role values server-only. Apply database migrations before accepting traffic.
+
+## Security and limitations
+
+- CV upload validation limits type and size; production storage/auth session wiring is required before real user uploads are persisted.
+- API routes validate payloads, but routes that access user data must verify Supabase sessions before release.
+- A production provider adapter must be implemented for every real source. The current UI truthfully shows no live jobs without one.
+- Use private object storage, least-privilege keys, deletion workflows, rate limiting, audit-safe error logs, and consent/retention controls before launch.
+
+## Future-ready extensions
+
+The provider/pipeline and normalized data model leave room for recurring searches, alerts, watchlists, resume tailoring, cover letters, salary analysis, interview preparation, and application analytics without coupling them to the UI.

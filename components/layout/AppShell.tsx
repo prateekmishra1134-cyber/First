@@ -1,0 +1,3 @@
+import Link from "next/link"; import { BriefcaseBusiness } from "lucide-react";
+const links=[["Dashboard","/dashboard"],["My profile","/profile"],["CV analysis","/cv"],["Find jobs","/search"],["Results","/jobs"],["Saved jobs","/saved"],["Applications","/applications"],["Settings","/settings"]];
+export function AppShell({children}:{children:React.ReactNode}){return <div className="app-layout"><aside className="sidebar"><Link href="/" className="brand"><i/>AI Job Finder</Link><nav>{links.map(([name,href])=><Link key={href} href={href}>{name}</Link>)}</nav><div style={{marginTop:50,fontSize:12,color:'#91b1a4'}}><BriefcaseBusiness size={15}/> Private by design<br/>Your CV stays yours.</div></aside><main className="app-main">{children}</main></div>}

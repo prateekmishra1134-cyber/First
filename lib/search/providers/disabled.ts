@@ -1,0 +1,2 @@
+import type { JobSearchProvider, SearchCriteria, ProviderResult } from "@/lib/search/contracts";
+export class ManualIntegrationProvider implements JobSearchProvider { constructor(public id:string, public label:string, public enabled=false) {} async searchJobs(_:SearchCriteria):Promise<ProviderResult>{ return {jobs:[],warning:`${this.label} requires a permitted, configured integration and was not searched.`}; } }

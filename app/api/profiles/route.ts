@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { candidateProfileSchema } from "@/lib/validation/schemas";
+export async function PUT(request:Request){ try{return NextResponse.json({profile:candidateProfileSchema.parse(await request.json()),saved:false,message:"Connect Supabase authentication to persist this profile."});}catch(error){return NextResponse.json({error:error instanceof Error?error.message:"Invalid profile"},{status:400});} }

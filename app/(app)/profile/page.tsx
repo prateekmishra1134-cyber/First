@@ -1,0 +1,1 @@
+export default function Profile(){return <><p className="eyebrow">Candidate profile</p><h1>Your evidence-backed profile.</h1><div className="panel" style={{maxWidth:820}}><div className="empty"><b>No analyzed CV yet.</b><p>Upload a CV to create an editable profile with education, work history, skills, certifications, and role preferences.</p></div></div></>}
